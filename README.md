@@ -63,40 +63,53 @@ Scripts are numbered in **deploy order** and each has a single responsibility.
 
 | Order | Script | Responsibility |
 |:-----:|--------|----------------|
-| 1 | *(security setup — **not included**, see below)* | Key hierarchy: certificate, symmetric key, and the 256-bit CSPRNG Feistel key, insert-once. |
+| 1 | [`scripts/pin_01_security_setup.sql`](scripts/pin_01_security_setup.sql) | Encryption hierarchy: certificate, AES-256 symmetric key, and the 256-bit CSPRNG Feistel key, written exactly once. |
 | 2 | [`scripts/pin_02_schema.sql`](scripts/pin_02_schema.sql) | The pool table (`dbo.Pin`) plus the seed-counter and dispense-watermark control tables. |
 | 3 | [`scripts/pin_03_seed.sql`](scripts/pin_03_seed.sql) | `usp_SeedPins` — batch mint: atomic range reservation, set-based 6-round Feistel, AES encryption. Where randomness and uniqueness are minted. |
 | 4 | [`scripts/pin_04_dispense.sql`](scripts/pin_04_dispense.sql) | `usp_DispensePins` — the hot path: destructive FIFO pop of still-encrypted codes. |
 | 5 | [`scripts/pin_05_decrypt.sql`](scripts/pin_05_decrypt.sql) | `usp_DecryptPin` — the only place plaintext is exposed, with tamper detection as a hard error. |
 | 6 | [`scripts/pin_06_maintenance.sql`](scripts/pin_06_maintenance.sql) | Watermark advance, integrity audit, pool stats, and a concurrency smoke test. |
 
-### ⚠️ Security setup (script 01) is intentionally not included
+### ⚠️ Security setup (script 01) — read before deploying
 
-The scripts assume a pre-existing security context that this repository does
-**not** ship:
+Script 01 builds the encryption hierarchy the rest of the system depends on:
 
 - a certificate **`PinCodeCert`**,
-- a symmetric key **`PinCodeKey`** (opened via that certificate), and
-- a secret table **`dbo.PinSecret`** holding the 256-bit Feistel key under row
-  `SecretName = 'FeistelKey'`.
+- an AES-256 symmetric key **`PinCodeKey`** (protected by that certificate), and
+- a secret table **`dbo.PinSecret`** holding the 256-bit Feistel key generated
+  from the OS CSPRNG under row `SecretName = 'FeistelKey'`.
 
-You must provision these yourself before scripts 03–06 will run. Keeping the key
-material out of source control is deliberate — **the security of every generated
-code depends entirely on the secrecy and integrity of the Feistel key.** Treat
-its generation, storage, backup, and rotation policy as the most sensitive part
-of any deployment.
+The script is shipped as a **template, not a turnkey secret store.** Before you
+run it in any real environment:
+
+- **Replace the placeholder passwords.** `CREATE MASTER KEY … PASSWORD =
+  'CHANGE_ME__…'` and the certificate-backup password are deliberately obvious
+  placeholders — source the real values from your secrets vault and never commit
+  them.
+- **Back up `PinCodeCert` immediately** (the commented `BACKUP CERTIFICATE`
+  block shows how) and vault the `.cer`/`.pvk` files. **Losing the certificate
+  makes every encrypted code permanently unrecoverable.**
+- **Protect the Feistel key as the crown jewel.** The security of every generated
+  code depends entirely on the secrecy and integrity of that 256-bit key, and on
+  the three invariants documented in the script: the key never changes, the round
+  count (6) never changes, and a `CodeId` is never issued twice. Never rotate the
+  key against a pool that still contains live codes.
 
 ## Requirements
 
 - **SQL Server 2019+** recommended. `OPTIMIZE_FOR_SEQUENTIAL_KEY` (in script 02)
-  can be removed for SQL Server 2016/2017 with no effect on correctness.
-- The security objects described above.
+  can be removed for SQL Server 2016/2017 with no effect on correctness. Script 01
+  targets SQL Server 2016+.
+- `CONTROL` on the database to run script 01 (it creates the master key,
+  certificate, and symmetric key).
+- A secrets vault for the passwords and certificate backup (see the security
+  note above).
 
-## Quick start (once you have permission and the security setup)
+## Quick start (once you have permission to use the code)
 
 ```sql
--- Deploy in order:
---   :r scripts/pin_01_security_setup.sql   -- provide your own (see above)
+-- Deploy in order (edit script 01's placeholder passwords first — see above):
+--   :r scripts/pin_01_security_setup.sql
 --   :r scripts/pin_02_schema.sql
 --   :r scripts/pin_03_seed.sql
 --   :r scripts/pin_04_dispense.sql
