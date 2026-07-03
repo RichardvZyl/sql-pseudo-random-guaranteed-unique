@@ -1,0 +1,101 @@
+PROPRIETARY SOFTWARE LICENSE
+
+Copyright (c) 2026 Richard van Zyl. All Rights Reserved.
+
+================================================================================
+1. OWNERSHIP
+================================================================================
+
+This software, including all source code, SQL scripts, documentation, design,
+and associated materials contained in this repository (collectively, the
+"Software"), is the exclusive property of Richard van Zyl (the "Owner") and is
+protected by copyright and other intellectual property laws.
+
+The Software is licensed, not sold. No title to or ownership of the Software is
+transferred to any person or entity by the mere act of accessing, viewing, or
+possessing a copy of it.
+
+================================================================================
+2. NO LICENSE GRANTED WITHOUT PERMISSION
+================================================================================
+
+NO rights, licenses, or permissions are granted to any person or entity under
+this license by default. In particular, without the prior, express, written
+permission of the Owner, you MAY NOT:
+
+  (a) use the Software, in whole or in part, for any purpose, including any
+      personal, academic, evaluation, internal, or commercial purpose;
+  (b) copy, reproduce, or store the Software, except for a single copy created
+      incidentally while viewing this repository through its hosting provider;
+  (c) modify, adapt, translate, or create derivative works based on the
+      Software;
+  (d) distribute, publish, sublicense, sell, rent, lease, lend, or otherwise
+      make the Software available to any third party;
+  (e) incorporate the Software, or any portion, concept, or technique embodied
+      in it, into any product, service, or codebase; or
+  (f) remove, alter, or obscure any copyright, trademark, or other proprietary
+      notice contained in the Software.
+
+Viewing this repository does not grant any implied license by estoppel or
+otherwise.
+
+================================================================================
+3. REQUESTING PERMISSION
+================================================================================
+
+To request permission to use the Software for any purpose, contact the Owner
+in writing at:
+
+    Richard van Zyl
+    richardvzyl@gmail.com
+
+Any grant of permission must be explicit, in writing, and signed (including by
+verifiable electronic means) by the Owner. Permission, if granted, may be
+limited in scope, time, and territory, and may be revoked in accordance with
+its terms. The absence of a response to a request constitutes a denial of
+permission.
+
+================================================================================
+4. RESERVATION OF RIGHTS
+================================================================================
+
+All rights not expressly granted in a separate written agreement signed by the
+Owner are reserved by the Owner. Nothing in this license shall be construed as
+granting, by implication, estoppel, or otherwise, any license or right under
+any patent, copyright, trademark, or trade secret of the Owner.
+
+================================================================================
+5. NO WARRANTY
+================================================================================
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NONINFRINGEMENT. THE OWNER MAKES
+NO REPRESENTATION THAT THE SOFTWARE IS SUITABLE FOR ANY PARTICULAR USE,
+INCLUDING ANY SECURITY-SENSITIVE OR CRYPTOGRAPHIC USE.
+
+================================================================================
+6. LIMITATION OF LIABILITY
+================================================================================
+
+IN NO EVENT SHALL THE OWNER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM,
+OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OF OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+================================================================================
+7. TERMINATION
+================================================================================
+
+Any permission granted by the Owner terminates automatically and immediately,
+without notice, if you breach any term of this license or of the written
+permission under which you were granted use. Upon termination you must cease
+all use of the Software and destroy all copies in your possession or control.
+
+================================================================================
+8. GOVERNING LAW
+================================================================================
+
+This license shall be governed by and construed in accordance with the laws of
+the jurisdiction in which the Owner resides, without regard to its conflict of
+laws principles.
