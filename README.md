@@ -1,6 +1,7 @@
-# Pseudo-Random, Guaranteed-Unique Code Generator
+# unique-code-dispenser
 
-A database engine for generating **pseudo-random, guaranteed-unique** codes —
+A database engine for generating and dispensing **pseudo-random,
+guaranteed-unique** codes —
 suitable for voucher codes, PINs, redemption codes, gift-card numbers, or any
 system that must hand out codes that are unpredictable to the recipient yet
 provably free of collisions.
