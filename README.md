@@ -160,7 +160,7 @@ SELECT * FROM pin.usp_dispense_pins(1);            -- pop (still encrypted)
 SELECT pin.usp_decrypt_pin(codeid, codeencrypted)
 FROM pin.usp_dispense_pins(1);
 
-SELECT * FROM pin.usp_audit_pin_integrity(1000);   -- expect ok = true for all
+SELECT * FROM pin.usp_audit_pin_integrity(1000);   -- expect (rows_checked, mismatches) = (1000, 0)
 ```
 
 A high-concurrency smoke test is documented at the end of each port's
