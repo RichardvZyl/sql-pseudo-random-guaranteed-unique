@@ -207,6 +207,65 @@ the whole batch. The **only** idea worth keeping from it — the
 PostgreSQL port. Everything else (6-digit space, `System.Random`, plaintext PK,
 no-`ON CONFLICT` batch insert) is discarded.
 
+## Security notes: round count, domain size, and observable patterns
+
+The uniqueness and randomness guarantees above are only as strong as the Feistel
+construction's parameters. The observable-pattern risk in this design is **not**
+batch size — it is **round count versus domain size**.
+
+A passive buyer collecting FIFO output effectively gets `(position, value)` pairs,
+and small-domain Feistel networks with few rounds have known distinguishing
+analyses — it is why FF1 uses 10 rounds, and FF3 used 8 and still got attacked
+and withdrawn. This design's **6 rounds** are margin over the Luby–Rackoff 3–4
+round minimum, but below standards-grade.
+
+> **Recommendation — decide before the first seed.** Rounds cost only *seed time*
+> and are fixed forever (invariant 2), so setting **8 or 10 rounds before first
+> seed is cheap insurance**. Once any pool has been seeded the round count can
+> never change without breaking the bijection. Changing it means editing the
+> round loop / CTEs in `pin_03_seed.sql` (and the audit in `pin_06_maintenance.sql`)
+> in both ports, plus the `rounds` `CHECK` on the PostgreSQL `pin.pin_secret`
+> table. See [§ How long does seeding take?](#how-long-does-seeding-take) for the
+> cost this trades against.
+
+And one pattern is unavoidable in any unique-code system, this one included:
+**zero repeats.** After ~100,000 observations, true random-*with-replacement*
+would show a birthday collision and a permutation never will. That distinguishes
+the output from a random *function*, not from a full Fisher–Yates deck, and it
+leaks nothing about unseen values. It is just the spec (guaranteed uniqueness),
+made visible.
+
+### How long does seeding take?
+
+Seeding is a one-time (or occasional) **offline operation**, run ahead of demand
+by an ops/batch job — never on the dispense hot path. Its cost is dominated by
+`rounds × count` SHA-256 evaluations plus a single set-based bulk `INSERT`: there
+are no per-row round trips, no retries, and no index maintenance beyond the one
+PK/clustered B-tree.
+
+As an order-of-magnitude guide (an estimate — **measure on your own hardware**, it
+has not been benchmarked here), a single set-based seed run completes in **seconds
+for hundreds of thousands of codes, and low minutes for full multi-million-row
+batches**. Raising the round count from 6 to 10 increases only the hashing portion
+(~1.7×) — which is exactly why the extra rounds are "cheap insurance": a modest,
+one-time cost added to an operation that already runs offline and ahead of demand.
+
+Measure it directly and record your figure:
+
+```sql
+-- SQL Server
+SET STATISTICS TIME ON;
+EXEC dbo.usp_SeedPins @Count = 1000000;
+
+-- PostgreSQL
+\timing on
+SELECT pin.usp_seed_pins(1000000);
+```
+
+| Hardware | Rounds | Count | Wall-clock |
+|----------|:------:|------:|-----------|
+| _(fill in for your environment)_ | 6 | 1,000,000 | _measure_ |
+
 ## License & Permission
 
 **Copyright © 2026 Richard van Zyl. All Rights Reserved.**
